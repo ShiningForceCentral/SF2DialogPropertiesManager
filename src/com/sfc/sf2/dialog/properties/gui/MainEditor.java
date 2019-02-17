@@ -206,7 +206,7 @@ public class MainEditor extends javax.swing.JFrame {
 
         jLabel18.setText("MapSprites Entry File :");
 
-        jTextField17.setText("D:\\SEGADEV\\GITHUB\\SF2DISASM\\disasm\\data\\graphics\\mapsprites\\entries.asm");
+        jTextField17.setText(".\\graphics\\mapsprites\\entries.asm");
         jTextField17.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField17ActionPerformed(evt);
@@ -222,7 +222,7 @@ public class MainEditor extends javax.swing.JFrame {
 
         jLabel19.setText("Portraits Entry File :");
 
-        jTextField18.setText("D:\\SEGADEV\\GITHUB\\SF2DISASM\\disasm\\data\\graphics\\portraits\\entries.asm");
+        jTextField18.setText(".\\graphics\\portraits\\entries.asm");
         jTextField18.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField18ActionPerformed(evt);
@@ -238,7 +238,7 @@ public class MainEditor extends javax.swing.JFrame {
 
         jLabel20.setText("Dialog Properties File :");
 
-        jTextField19.setText("D:\\SEGADEV\\GITHUB\\SF2DISASM\\disasm\\data\\spritedialogdefs.bin");
+        jTextField19.setText(".\\spritedialogdefs.bin");
         jTextField19.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField19ActionPerformed(evt);
@@ -254,7 +254,7 @@ public class MainEditor extends javax.swing.JFrame {
 
         jLabel21.setText("Base palette :");
 
-        jTextField20.setText("D:\\SEGADEV\\GITHUB\\SF2DISASM\\disasm\\data\\graphics\\tech\\basepalette.bin");
+        jTextField20.setText(".\\graphics\\tech\\basepalette.bin");
         jTextField20.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField20ActionPerformed(evt);
@@ -275,7 +275,7 @@ public class MainEditor extends javax.swing.JFrame {
             }
         });
 
-        jTextField21.setText("D:\\SEGADEV\\GITHUB\\SF2DISASM\\disasm\\");
+        jTextField21.setText("..\\");
             jTextField21.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     jTextField21ActionPerformed(evt);
@@ -366,7 +366,7 @@ public class MainEditor extends javax.swing.JFrame {
 
             jLabel14.setText("File :");
 
-            jTextField13.setText("D:\\SEGADEV\\GITHUB\\SF2DISASM\\disasm\\data\\newspritedialogdefs.bin");
+            jTextField13.setText(".\\newspritedialogdefs.bin");
             jTextField13.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     jTextField13ActionPerformed(evt);
