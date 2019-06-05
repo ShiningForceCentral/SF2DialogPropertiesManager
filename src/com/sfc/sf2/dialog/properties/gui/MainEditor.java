@@ -243,7 +243,7 @@ public class MainEditor extends javax.swing.JFrame {
 
         jLabel20.setText("Dialog Properties File :");
 
-        jTextField19.setText(".\\spritedialogdefs.bin");
+        jTextField19.setText(".\\spritedialogproperties-expanded.asm");
         jTextField19.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField19ActionPerformed(evt);
@@ -371,7 +371,7 @@ public class MainEditor extends javax.swing.JFrame {
 
             jLabel14.setText("File :");
 
-            jTextField13.setText(".\\newspritedialogdefs.bin");
+            jTextField13.setText(".\\spritedialogproperties-expanded.asm");
             jTextField13.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     jTextField13ActionPerformed(evt);

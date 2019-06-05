@@ -410,7 +410,7 @@
                             </Component>
                             <Component class="javax.swing.JTextField" name="jTextField19">
                               <Properties>
-                                <Property name="text" type="java.lang.String" value=".\u005cspritedialogdefs.bin" containsInvalidXMLChars="true"/>
+                                <Property name="text" type="java.lang.String" value=".\u005cspritedialogproperties-expanded.asm" containsInvalidXMLChars="true"/>
                               </Properties>
                               <Events>
                                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField19ActionPerformed"/>
@@ -529,7 +529,7 @@
                             </Component>
                             <Component class="javax.swing.JTextField" name="jTextField13">
                               <Properties>
-                                <Property name="text" type="java.lang.String" value=".\u005cnewspritedialogdefs.bin" containsInvalidXMLChars="true"/>
+                                <Property name="text" type="java.lang.String" value=".\u005cspritedialogproperties-expanded.asm" containsInvalidXMLChars="true"/>
                               </Properties>
                               <Events>
                                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField13ActionPerformed"/>
