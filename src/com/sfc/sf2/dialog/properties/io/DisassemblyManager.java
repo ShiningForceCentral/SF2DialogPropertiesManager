@@ -93,6 +93,16 @@ public class DisassemblyManager {
                 }
             }
             
+            if(mapspriteEnum.isEmpty()){
+                System.out.println("WARNING - No enum entry found for enum Mapsprites. Please check formatting : starts with line \"; enum Mapsprites\", directly followed by lines all starting with \"MAPSPRITE\"");
+            }
+            if(portraitEnum.isEmpty()){
+                System.out.println("WARNING - No enum entry found for enum Portraits. Please check formatting : starts with line \"; enum Portraits\", directly followed by lines all starting with \"PORTRAIT\"");
+            }
+            if(sfxEnum.isEmpty()){
+                System.out.println("WARNING - No enum entry found for enum Sfx. Please check formatting : starts with line \"; enum Sfx\", directly followed by lines all starting with \"SFX\"");
+            }
+            
             File file = new File(filepath);
             Scanner scan = new Scanner(file);
             while(scan.hasNext()){
