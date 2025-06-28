@@ -7,13 +7,10 @@ package com.sfc.sf2.dialog.properties.gui;
 
 import com.sfc.sf2.dialog.properties.DialogProperties;
 import com.sfc.sf2.dialog.properties.DialogPropertiesEntry;
-import com.sfc.sf2.mapsprite.MapSprite;
 import com.sfc.sf2.portrait.Portrait;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -79,22 +76,19 @@ public class DialogPropertiesTableModel extends AbstractTableModel {
     } 
     
     public void updateProperties(){
-        List<DialogPropertiesEntry> entries = new ArrayList<>();
-        for(Object[] entry : tableData){
+        DialogPropertiesEntry[] entries = properties.getEntries();
+        for (int i = 0; i < tableData.length; i++) {
             try{
-                if(((int)entry[0])!=-1 && ((int)entry[2])!=-1 && ((int)entry[4])!=-1){
-                    DialogPropertiesEntry dialogPropertiesEntry = new DialogPropertiesEntry();
-                    dialogPropertiesEntry.setSpriteId((int)entry[0]);
-                    dialogPropertiesEntry.setPortraitId((int)entry[2]);
-                    dialogPropertiesEntry.setSfxId((int)entry[4]);
-                    entries.add(dialogPropertiesEntry);
+                if(((int)tableData[i][0])!=-1 && ((int)tableData[i][2])!=-1 && ((int)tableData[i][4])!=-1){
+                    DialogPropertiesEntry dialogPropertiesEntry = entries[i];
+                    dialogPropertiesEntry.setSprite((int)tableData[i][0], dialogPropertiesEntry.getSpriteName());
+                    dialogPropertiesEntry.setPortrait((int)tableData[i][2], dialogPropertiesEntry.getPortraitName());
+                    dialogPropertiesEntry.setSfx((int)tableData[i][4], dialogPropertiesEntry.getSfxName());
                 }
             }catch(Exception e){
                 break;
             }
         }
-        DialogPropertiesEntry[] returnedEntries = new DialogPropertiesEntry[entries.size()];
-        properties.setEntries(entries.toArray(returnedEntries));
     }  
     
     public void updateSprite(int row){
