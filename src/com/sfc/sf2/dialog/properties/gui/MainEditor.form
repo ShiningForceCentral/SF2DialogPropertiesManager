@@ -272,6 +272,7 @@
                                           <Group type="103" groupAlignment="0" attributes="0">
                                               <Component id="jPanel4" max="32767" attributes="0"/>
                                               <Component id="jPanel5" alignment="0" pref="288" max="32767" attributes="0"/>
+                                              <Component id="jScrollPane4" alignment="1" pref="288" max="32767" attributes="0"/>
                                           </Group>
                                           <EmptySpace max="-2" attributes="0"/>
                                       </Group>
@@ -284,7 +285,9 @@
                                           <Component id="jPanel4" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
                                           <Component id="jPanel5" min="-2" pref="102" max="-2" attributes="0"/>
-                                          <EmptySpace pref="207" max="32767" attributes="0"/>
+                                          <EmptySpace pref="91" max="32767" attributes="0"/>
+                                          <Component id="jScrollPane4" min="-2" pref="110" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
@@ -479,6 +482,25 @@
                                     </Component>
                                   </SubComponents>
                                 </Container>
+                                <Container class="javax.swing.JScrollPane" name="jScrollPane4">
+                                  <AuxValues>
+                                    <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+                                  </AuxValues>
+
+                                  <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+                                  <SubComponents>
+                                    <Component class="javax.swing.JTextArea" name="jTextArea3">
+                                      <Properties>
+                                        <Property name="editable" type="boolean" value="false"/>
+                                        <Property name="columns" type="int" value="20"/>
+                                        <Property name="lineWrap" type="boolean" value="true"/>
+                                        <Property name="rows" type="int" value="5"/>
+                                        <Property name="text" type="java.lang.String" value="Used for:&#xa;- spritedialogproperties.asm&#xa;- spritedialogproperties.bin&#xa;- spritedialogproperties-standard.asm"/>
+                                        <Property name="wrapStyleWord" type="boolean" value="true"/>
+                                      </Properties>
+                                    </Component>
+                                  </SubComponents>
+                                </Container>
                               </SubComponents>
                             </Container>
                             <Container class="javax.swing.JPanel" name="jPanel2">
@@ -496,6 +518,7 @@
                                       <Group type="102" alignment="0" attributes="0">
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="jScrollPane2" pref="288" max="32767" attributes="0"/>
                                               <Component id="jPanel9" pref="288" max="32767" attributes="0"/>
                                               <Component id="jPanel11" max="32767" attributes="0"/>
                                           </Group>
@@ -510,7 +533,9 @@
                                           <Component id="jPanel11" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
                                           <Component id="jPanel9" min="-2" pref="102" max="-2" attributes="0"/>
-                                          <EmptySpace max="32767" attributes="0"/>
+                                          <EmptySpace pref="89" max="32767" attributes="0"/>
+                                          <Component id="jScrollPane2" min="-2" pref="110" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
@@ -533,7 +558,7 @@
                                                   <Group type="102" attributes="0">
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Group type="103" groupAlignment="0" attributes="0">
-                                                          <Component id="jLabel4" alignment="0" pref="184" max="32767" attributes="0"/>
+                                                          <Component id="jLabel4" alignment="0" max="32767" attributes="0"/>
                                                           <Group type="102" alignment="0" attributes="0">
                                                               <Component id="jLabel23" min="-2" max="-2" attributes="0"/>
                                                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -702,6 +727,25 @@
                                       <Events>
                                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton3ActionPerformed"/>
                                       </Events>
+                                    </Component>
+                                  </SubComponents>
+                                </Container>
+                                <Container class="javax.swing.JScrollPane" name="jScrollPane2">
+                                  <AuxValues>
+                                    <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+                                  </AuxValues>
+
+                                  <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+                                  <SubComponents>
+                                    <Component class="javax.swing.JTextArea" name="jTextArea2">
+                                      <Properties>
+                                        <Property name="editable" type="boolean" value="false"/>
+                                        <Property name="columns" type="int" value="20"/>
+                                        <Property name="lineWrap" type="boolean" value="true"/>
+                                        <Property name="rows" type="int" value="5"/>
+                                        <Property name="text" type="java.lang.String" value="Used for:&#xa;allydialogproperties-standard.asm"/>
+                                        <Property name="wrapStyleWord" type="boolean" value="true"/>
+                                      </Properties>
                                     </Component>
                                   </SubComponents>
                                 </Container>
