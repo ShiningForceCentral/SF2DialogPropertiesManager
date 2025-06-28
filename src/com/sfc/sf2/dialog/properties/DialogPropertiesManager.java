@@ -67,6 +67,12 @@ public class DialogPropertiesManager {
         DisassemblyManager.exportDisassembly(dialogProperties, filepath);
         System.out.println("com.sfc.sf2.dialog.properties.DialogPropertiesManager.exportDisassembly() - Disassembly exported.");        
     } 
+    
+    public void exportAlliesDisassembly(String filepath){
+        System.out.println("com.sfc.sf2.dialog.properties.DialogPropertiesManager.exportAlliesDisassembly() - Exporting disassembly ...");
+        DisassemblyManager.exportAlliesDisassembly(dialogProperties, filepath);
+        System.out.println("com.sfc.sf2.dialog.properties.DialogPropertiesManager.exportAlliesDisassembly() - Disassembly exported.");        
+    } 
 
     public DialogProperties getDialogProperties() {
         return dialogProperties;

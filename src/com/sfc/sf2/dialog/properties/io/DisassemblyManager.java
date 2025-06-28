@@ -30,6 +30,7 @@ import java.util.Scanner;
 public class DisassemblyManager {
     
     static String asmHeader;
+    static String asmHeaderAllies;
     
     public static DialogProperties importDisassembly(String basePath, String filepath){
         System.out.println("com.sfc.sf2.dialogproperties.io.DisassemblyManager.importDisassembly() - Importing disassembly file ...");
@@ -134,6 +135,7 @@ public class DisassemblyManager {
     public static DialogProperties importAlliesDisassemblyAsm(String enumFilePath, String filepath){
         DialogProperties dialogproperties = new DialogProperties();
         DialogPropertiesEntry[] entries = null;
+        asmHeaderAllies = new String();
         List<DialogPropertiesEntry> entryList = new ArrayList();
         try{
             Map<String, Integer> mapspriteEnum = new HashMap();
@@ -141,23 +143,29 @@ public class DisassemblyManager {
             Map<String, Integer> sfxEnum = new HashMap();
             importEnumFileData(enumFilePath, mapspriteEnum, portraitEnum, sfxEnum);
             
+            boolean isHeader = true;
             File file = new File(filepath);
             Scanner scan = new Scanner(file);
             int index = 0;
             while(scan.hasNext()){
-                String line = scan.nextLine().trim();
-                if (line.startsWith("allyPortraitAndSfx: macro"))
+                String line = scan.nextLine();
+                if (line.startsWith("allyPortraitAndSfx: macro")) {
+                    //Macro line starts the same as each entry line
+                    asmHeaderAllies = asmHeaderAllies+line+"\n";
                     continue;   //Ignore the macro definition
-                if(line.contains(";")){
+                }
+                if (line.startsWith("; 0:")) {
+                    isHeader = false;
+                    continue;
+                }
+                if(!line.startsWith(";") && line.contains(";")){
                     line = line.substring(0,line.indexOf(";"));
                 }
-                if(line.contains(":")){
-                    line = line.substring(0,line.indexOf(":"));
-                }
-                if(line.startsWith("allyPortraitAndSfx")){
+                if(line.trim().startsWith("allyPortraitAndSfx")){
+                    isHeader = false;
                     DialogPropertiesEntry entry = new DialogPropertiesEntry();
                     
-                    String[] split = line.split("\\s+");
+                    String[] split = line.trim().split("\\s+");
                     split[1] = split[1].replace(",", "");
                     
                     entry.setPortrait(portraitEnum.get("PORTRAIT_"+split[1]), split[1]);
@@ -181,6 +189,8 @@ public class DisassemblyManager {
                     }                  
                     entryList.add(entry);
                     index++;
+                } else if (isHeader) {
+                    asmHeaderAllies = asmHeaderAllies+line+"\n";
                 }
             }
         } catch (IOException ex) {
@@ -340,7 +350,26 @@ public class DisassemblyManager {
             System.out.println(ex);
         }  
         System.out.println("com.sfc.sf2.dialogproperties.io.DisassemblyManager.exportDisassembly() - Disassembly exported.");        
-    }     
+    }    
+    
+    public static void exportAlliesDisassembly(DialogProperties props, String filepath){
+        System.out.println("com.sfc.sf2.dialogproperties.io.DisassemblyManager.exportAlliesDisassembly() - Exporting disassembly ...");
+        try{
+            if(filepath.endsWith(".asm")){
+                String data = produceAlliesPropertiesFileAsm(props);
+                Path propsFilePath = Paths.get(filepath);
+                Files.write(propsFilePath,data.getBytes());
+                System.out.println("asm exported to " + propsFilePath);
+            }else{
+                System.out.println("Exporting ally dialogs from .bin is not implemented");
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(DisassemblyManager.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+            System.out.println(ex);
+        }  
+        System.out.println("com.sfc.sf2.dialogproperties.io.DisassemblyManager.exportAlliesDisassembly() - Disassembly exported.");        
+    }
     
     private static short getWord(byte[] data, int cursor){
         ByteBuffer bb = ByteBuffer.allocate(2);
@@ -357,7 +386,7 @@ public class DisassemblyManager {
         bb.put(data[cursor]);
         byte b = bb.get(0);
         return b;
-    }    
+    }
     
     private static String producePropertiesFileAsm(DialogProperties props){
         DialogPropertiesEntry[] entries = props.getEntries();
@@ -373,6 +402,59 @@ public class DisassemblyManager {
             asm.append("                "+"speechSfx "+entries[i].getSfxName()+"\n\n");
         }
         asm.append("                "+"tableEnd"+"\n");
+        return asm.toString();
+    }
+    
+    private static String produceAlliesPropertiesFileAsm(DialogProperties props){
+        DialogPropertiesEntry[] entries = props.getEntries();
+        StringBuilder asm = new StringBuilder();
+        if (asmHeaderAllies == null || asmHeaderAllies.length() < 5) {
+            asm.append("\nallyPortraitAndSfx: macro\n");
+            asm.append("    defineShorthand.b PORTRAIT_,\\1\n");
+            asm.append("    defineShorthand.b SFX_,\\2\n");
+            asm.append("    endm\n");
+            asm.append("\n\n\ntable_AllyDialogueProperties:\n\n");
+        } else {
+            asm.append(asmHeaderAllies);
+        }
+        int allyIndex;
+        int idx;
+        for(int i=0;i<entries.length;i++){
+            allyIndex = i / 3;
+            idx = i % 3;
+            if (idx == 0) {
+                //First line for ally
+                String name = entries[i].getPortraitName();
+                if (name.equals("BOWIE_PAINTING")) {
+                    name = "";
+                } else if (name.contains("_")) {
+                    name = name.substring(0, name.indexOf("_"));
+                }
+                if (allyIndex == 30) {
+                    asm.append("            if (EXPANDED_FORCE_MEMBERS=1)\n");
+                }
+                asm.append("; "+allyIndex+": "+name+"\n");
+            }
+            asm.append("                allyPortraitAndSfx "+entries[i].getPortraitName()+", "+entries[i].getSfxName()+"\n");
+            if (idx == 2) {
+                //Last line for ally
+                asm.append("\n");
+                if (allyIndex == 31) {
+                    asm.append("\n            endif\n");
+                }
+            }
+        }
+        if (entries.length / 3 < 32) {
+            for (int i = entries.length / 3; i < 32; i++) {
+                asm.append("; "+i+": \n");
+                for (int a = 0; a < 3; a++) {
+                    asm.append("                allyPortraitAndSfx BOWIE_PAINTING, DIALOG_BLEEP_5\n");
+                }
+                if (i == 31) {
+                    asm.append("            endif\n");
+                }
+            }
+        }
         return asm.toString();
     }
     
