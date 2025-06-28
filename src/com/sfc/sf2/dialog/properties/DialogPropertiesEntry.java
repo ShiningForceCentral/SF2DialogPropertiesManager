@@ -14,28 +14,46 @@ public class DialogPropertiesEntry {
     private int spriteId;
     private int portraitId;
     private int sfxId;
+    private String spriteName;
+    private String portraitName;
+    private String sfxName;
 
     public int getSpriteId() {
         return spriteId;
-    }
-
-    public void setSpriteId(int spriteId) {
-        this.spriteId = spriteId;
     }
 
     public int getPortraitId() {
         return portraitId;
     }
 
-    public void setPortraitId(int portraitId) {
-        this.portraitId = portraitId;
-    }
-
     public int getSfxId() {
         return sfxId;
     }
 
-    public void setSfxId(int sfxId) {
+    public String getSpriteName() {
+        return spriteName;
+    }
+
+    public String getPortraitName() {
+        return portraitName;
+    }
+
+    public String getSfxName() {
+        return sfxName;
+    }
+
+    public void setPortrait(int portraitId, String portraitName) {
+        this.portraitId = portraitId;
+        this.portraitName = portraitName;
+    }
+
+    public void setSprite(int spriteId, String spriteName) {
+        this.spriteId = spriteId;
+        this.spriteName = spriteName;
+    }
+
+    public void setSfx(int sfxId, String sfxName) {
         this.sfxId = sfxId;
+        this.sfxName = sfxName;
     }
 }

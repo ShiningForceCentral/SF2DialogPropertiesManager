@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 /**
@@ -28,14 +29,16 @@ import java.util.Scanner;
  */
 public class DisassemblyManager {
     
+    static String asmHeader;
+    
     public static DialogProperties importDisassembly(String basePath, String filepath){
         System.out.println("com.sfc.sf2.dialogproperties.io.DisassemblyManager.importDisassembly() - Importing disassembly file ...");
         DialogProperties dialogproperties = new DialogProperties();
+        String enumFilePath = basePath + "sf2enums.asm";
         if(filepath.endsWith(".asm")){
-            String enumFilePath = basePath + "sf2enums.asm";
             dialogproperties = importDisassemblyAsm(enumFilePath, filepath);
         }else{
-            dialogproperties = importDisassemblyBin(filepath);
+            dialogproperties = importDisassemblyBin(enumFilePath, filepath);
         }
         System.out.println("com.sfc.sf2.dialogproperties.io.DisassemblyManager.importDisassembly() - Disassembly imported.");
         return dialogproperties;
@@ -44,52 +47,66 @@ public class DisassemblyManager {
     public static DialogProperties importDisassemblyAsm(String enumFilePath, String filepath){
         DialogProperties dialogproperties = new DialogProperties();
         DialogPropertiesEntry[] entries = null;
+        asmHeader = new String();
         List<DialogPropertiesEntry> entryList = new ArrayList();
         try{
             Map<String, Integer> mapspriteEnum = new HashMap();
             Map<String, Integer> portraitEnum = new HashMap();
             Map<String, Integer> sfxEnum = new HashMap();
-            importMetadataAsm(enumFilePath, mapspriteEnum, portraitEnum, sfxEnum);
+            importEnumFileData(enumFilePath, mapspriteEnum, portraitEnum, sfxEnum);
             
+            boolean isHeader = true;
             File file = new File(filepath);
             Scanner scan = new Scanner(file);
             while(scan.hasNext()){
-                String line = scan.nextLine().trim();
-                if(line.contains(";")){
+                String line = scan.nextLine();
+                if(!line.startsWith(";") && line.contains(";")){
                     line = line.substring(0,line.indexOf(";"));
                 }
-                if(line.contains(":")){
-                    line = line.substring(0,line.indexOf(":"));
-                }
-                if(line.startsWith("mapsprite")){
+                if(line.trim().startsWith("mapsprite")){
+                    isHeader = false;
                     DialogPropertiesEntry entry = new DialogPropertiesEntry();
                     
                     String value = line.trim().substring("mapsprite".length()).trim();
                     if(value.contains("$")||value.matches("[0-9]+")){
-                        entry.setSpriteId(valueOf(value));
-                    }else{
-                        entry.setSpriteId(mapspriteEnum.get("MAPSPRITE_"+value));
+                        int val = valueOf(value);
+                        entry.setSprite(val, FindByValue(val, mapspriteEnum));
+                    }else{                        
+                        entry.setSprite(mapspriteEnum.get("MAPSPRITE_"+value), value);
                     }
                     
                     if(scan.hasNext()){line = scan.nextLine().trim();}
                     if(!line.startsWith("portrait")){break;}
                     value = line.trim().substring("portrait".length()).trim();
                     if(value.contains("$")||value.matches("[0-9]+")){
-                        entry.setPortraitId(valueOf(value));
-                    }else{
-                        entry.setPortraitId(portraitEnum.get("PORTRAIT_"+value));
+                        int val = valueOf(value);
+                        entry.setPortrait(val, FindByValue(val, portraitEnum));
+                    }else{                        
+                        entry.setPortrait(portraitEnum.get("PORTRAIT_"+value), value);
                     }
                     
                     if(scan.hasNext()){line = scan.nextLine().trim();}
+                    if (line.trim().startsWith("if (FIX_ELIS_SPEECH_SFX"))
+                    {
+                        //Special case to handle the "FIX_ELIS_SPEECH_SFX"
+                        //Not intelligent enough to preserve both formats. Just applies the fix
+                        line = scan.nextLine().trim();
+                        scan.nextLine();
+                        scan.nextLine();
+                        scan.nextLine();
+                    }
                     if(!line.trim().startsWith("speechSfx")){break;}
                     value = line.substring("speechSfx".length()).trim();
                     if(value.contains("$")||value.matches("[0-9]+")){
-                        entry.setSfxId(valueOf(value));
-                    }else{
-                        entry.setSfxId(sfxEnum.get("SFX_"+value));
+                        int val = valueOf(value);
+                        entry.setSfx(val, FindByValue(val, sfxEnum));
+                    }else{                        
+                        entry.setSfx(sfxEnum.get("SFX_"+value), value);
                     }
                     
                     entryList.add(entry);
+                } else if (isHeader) {
+                    asmHeader = asmHeader+line+"\n";
                 }
             }
         } catch (IOException ex) {
@@ -122,7 +139,7 @@ public class DisassemblyManager {
             Map<String, Integer> mapspriteEnum = new HashMap();
             Map<String, Integer> portraitEnum = new HashMap();
             Map<String, Integer> sfxEnum = new HashMap();
-            importMetadataAsm(enumFilePath, mapspriteEnum, portraitEnum, sfxEnum);
+            importEnumFileData(enumFilePath, mapspriteEnum, portraitEnum, sfxEnum);
             
             File file = new File(filepath);
             Scanner scan = new Scanner(file);
@@ -143,23 +160,23 @@ public class DisassemblyManager {
                     String[] split = line.split("\\s+");
                     split[1] = split[1].replace(",", "");
                     
-                    entry.setPortraitId(portraitEnum.get("PORTRAIT_"+split[1]));
-                    entry.setSfxId(sfxEnum.get("SFX_"+split[2]));  
+                    entry.setPortrait(portraitEnum.get("PORTRAIT_"+split[1]), split[1]);
+                    entry.setSfx(sfxEnum.get("SFX_"+split[2]), split[2]);
                     
                     String mapspriteSuffix = (index % 3 == 0 ? "_BASE" : (index % 3 == 1 ? "_PROMO" : "_SPECIAL"));
                     String mapspritePrefix;
                     if (split[1].contains("_")) {
-                        mapspritePrefix = "MAPSPRITE_"+split[1].substring(0, split[1].indexOf("_"));
+                        mapspritePrefix = split[1].substring(0, split[1].indexOf("_"));
                     } else {
-                        mapspritePrefix = "MAPSPRITE_"+split[1];                            
+                        mapspritePrefix = split[1];                            
                     }
-                    if (mapspriteEnum.containsKey(mapspritePrefix+mapspriteSuffix)) {
-                        entry.setSpriteId(mapspriteEnum.get(mapspritePrefix+mapspriteSuffix));
+                    if (mapspriteEnum.containsKey("MAPSPRITE_"+mapspritePrefix+mapspriteSuffix)) {
+                        entry.setSprite(mapspriteEnum.get("MAPSPRITE_"+mapspritePrefix+mapspriteSuffix), mapspritePrefix+mapspriteSuffix);
                     } else {
-                        if (mapspriteEnum.containsKey(mapspritePrefix+"_PROMO")) {
-                            entry.setSpriteId(mapspriteEnum.get(mapspritePrefix+"_PROMO"));
-                        } else if (mapspriteEnum.containsKey(mapspritePrefix+"_BASE")) {
-                            entry.setSpriteId(mapspriteEnum.get(mapspritePrefix+"_BASE"));
+                        if (mapspriteEnum.containsKey("MAPSPRITE_"+mapspritePrefix+"_PROMO")) {
+                            entry.setSprite(mapspriteEnum.get("MAPSPRITE_"+mapspritePrefix+"_PROMO"), mapspritePrefix+"_PROMO");
+                        } else if (mapspriteEnum.containsKey("MAPSPRITE_"+mapspritePrefix+"_BASE")) {
+                            entry.setSprite(mapspriteEnum.get("MAPSPRITE_"+mapspritePrefix+"_BASE"), mapspritePrefix+"_BASE");
                         }
                     }                  
                     entryList.add(entry);
@@ -174,8 +191,8 @@ public class DisassemblyManager {
         dialogproperties.setEntries(entries);
         return dialogproperties;
     }
-        
-    public static void importMetadataAsm(String enumFilePath, Map<String, Integer> mapspriteEnum, Map<String, Integer> portraitEnum, Map<String, Integer> sfxEnum){
+
+    public static void importEnumFileData(String enumFilePath, Map<String, Integer> mapspriteEnum, Map<String, Integer> portraitEnum, Map<String, Integer> sfxEnum){
         try{            
             File enumFile = new File(enumFilePath);
             Scanner enumScan = new Scanner(enumFile);
@@ -256,22 +273,33 @@ public class DisassemblyManager {
         }
     }
     
-    public static DialogProperties importDisassemblyBin(String filepath){
+    public static DialogProperties importDisassemblyBin(String enumFilepath, String filepath){
         DialogProperties dialogproperties = new DialogProperties();
         DialogPropertiesEntry[] entries = null;
         List<DialogPropertiesEntry> entryList = new ArrayList();
         try{
+            Map<String, Integer> mapspriteEnum = new HashMap();
+            Map<String, Integer> portraitEnum = new HashMap();
+            Map<String, Integer> sfxEnum = new HashMap();
+            importEnumFileData(enumFilepath, mapspriteEnum, portraitEnum, sfxEnum);
+            
             Path path = Paths.get(filepath);
             if(path.toFile().exists()){
                 byte[] data = Files.readAllBytes(path);
                 int cursor = 0;
                 
-                while((cursor+4)<data.length && getWord(data,cursor)!=-1){
-                    DialogPropertiesEntry entry = new DialogPropertiesEntry();
+                while((cursor+4)<data.length && getWord(data,cursor)!=-1){                    
+                    int spriteId = getByte(data,cursor)&0xFF;
+                    int portraitId = getByte(data,cursor+1)&0xFF;
+                    int sfxId = getByte(data,cursor+2)&0xFF;
+                    String spriteName = FindByValue(spriteId, mapspriteEnum);
+                    String portraitName = FindByValue(portraitId, portraitEnum);
+                    String sfxName = FindByValue(sfxId, sfxEnum);
                     
-                    entry.setSpriteId(getByte(data,cursor)&0xFF);
-                    entry.setPortraitId(getByte(data,cursor+1)&0xFF);
-                    entry.setSfxId(getByte(data,cursor+2)&0xFF);
+                    DialogPropertiesEntry entry = new DialogPropertiesEntry();
+                    entry.setSprite(spriteId, spriteName);
+                    entry.setPortrait(portraitId, portraitName);
+                    entry.setSfx(sfxId, sfxName);
                     entryList.add(entry);
                     
                     cursor+=4;
@@ -296,12 +324,10 @@ public class DisassemblyManager {
         System.out.println("com.sfc.sf2.dialogproperties.io.DisassemblyManager.exportDisassembly() - Exporting disassembly ...");
         try{
             if(filepath.endsWith(".asm")){
-                StringBuilder asm = new StringBuilder();
-                asm.append("SpriteDialogProperties:\n");
-                asm.append(producePropertiesFileAsm(props));
+                String data = producePropertiesFileAsm(props);
                 Path propsFilePath = Paths.get(filepath);
-                Files.write(propsFilePath,asm.toString().getBytes());
-                System.out.println(asm);
+                Files.write(propsFilePath,data.getBytes());
+                System.out.println("asm exported to " + propsFilePath);
             }else{
                 byte[] propertiesFileBytes = producePropertiesFileBytes(props);
                 Path propsFilePath = Paths.get(filepath);
@@ -336,10 +362,15 @@ public class DisassemblyManager {
     private static String producePropertiesFileAsm(DialogProperties props){
         DialogPropertiesEntry[] entries = props.getEntries();
         StringBuilder asm = new StringBuilder();
+        if (asmHeader == null || asmHeader.length() < 5) {
+            asm.append("\ntable_MapspriteDialogueProperties:\n\n");
+        } else {
+            asm.append(asmHeader);
+        }
         for(int i=0;i<entries.length;i++){
-            asm.append("                "+"mapSprite   "+entries[i].getSpriteId()+"\n");
-            asm.append("                "+"portrait    "+entries[i].getPortraitId()+"\n");
-            asm.append("                "+"speechSound "+entries[i].getSfxId()+"\n\n");
+            asm.append("                "+"mapSprite "+entries[i].getSpriteName()+"\n");
+            asm.append("                "+"portrait "+entries[i].getPortraitName()+"\n");
+            asm.append("                "+"speechSfx "+entries[i].getSfxName()+"\n\n");
         }
         asm.append("                "+"tableEnd"+"\n");
         return asm.toString();
@@ -356,5 +387,21 @@ public class DisassemblyManager {
         propertiesFileBytes[entries.length*4] = -1;
         propertiesFileBytes[entries.length*4+1] = -1;
         return propertiesFileBytes;
+    }
+    
+    private static int FindByKey(String key, Map<String, Integer> map) {
+        if (map.containsKey(key))
+            return map.get(key);
+        return -1;
+    }
+    
+    private static String FindByValue(int value, Map<String, Integer> map) {
+        for (Entry<String, Integer> ent : map.entrySet()) {
+            if (ent.getValue().equals(value)) {
+                return ent.getKey().substring(ent.getKey().indexOf("_")+1);
+            }
+        }
+        
+        return "NOT_FOUND";
     }
 }
