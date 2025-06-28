@@ -243,7 +243,7 @@ public class MainEditor extends javax.swing.JFrame {
 
         jLabel20.setText("Dialog Properties File :");
 
-        jTextField19.setText(".\\spritedialogproperties-expanded.asm");
+        jTextField19.setText(".\\spritedialogproperties-standard.asm");
         jTextField19.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField19ActionPerformed(evt);
@@ -359,7 +359,7 @@ public class MainEditor extends javax.swing.JFrame {
                         .addComponent(jTextField19, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel20)
                         .addComponent(jButton25))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jButton18))
@@ -371,7 +371,7 @@ public class MainEditor extends javax.swing.JFrame {
 
             jLabel14.setText("File :");
 
-            jTextField13.setText(".\\spritedialogproperties-expanded.asm");
+            jTextField13.setText(".\\spritedialogproperties-standard.asm");
             jTextField13.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     jTextField13ActionPerformed(evt);
@@ -404,7 +404,7 @@ public class MainEditor extends javax.swing.JFrame {
                         .addGroup(jPanel5Layout.createSequentialGroup()
                             .addComponent(jLabel14)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jTextField13, javax.swing.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
+                            .addComponent(jTextField13, javax.swing.GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)
                             .addGap(10, 10, 10)
                             .addComponent(jButton20))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
@@ -421,26 +421,31 @@ public class MainEditor extends javax.swing.JFrame {
                         .addComponent(jLabel14)
                         .addComponent(jButton20))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton2)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addContainerGap(178, Short.MAX_VALUE))
+                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel5Layout.createSequentialGroup()
+                            .addComponent(jButton2)
+                            .addGap(0, 0, Short.MAX_VALUE))
+                        .addGroup(jPanel5Layout.createSequentialGroup()
+                            .addGap(5, 5, 5)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)))
+                    .addContainerGap())
             );
 
             javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
             jPanel8.setLayout(jPanel8Layout);
             jPanel8Layout.setHorizontalGroup(
                 jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
-                .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
+                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
             );
             jPanel8Layout.setVerticalGroup(
                 jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 370, Short.MAX_VALUE)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap())
             );
 
             jSplitPane2.setLeftComponent(jPanel8);

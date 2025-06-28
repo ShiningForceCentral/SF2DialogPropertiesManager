@@ -47,7 +47,7 @@ public class DialogPropertiesManager {
             }
         }
         portraits = portraitManager.importDisassemblyFromEntryFile(basePath, portraitsPath);
-        dialogProperties = DisassemblyManager.importDisassembly(filePath);
+        dialogProperties = DisassemblyManager.importDisassembly(basePath, filePath);
         System.out.println("com.sfc.sf2.dialog.properties.DialogPropertiesManager.importDisassembly() - Disassembly imported.");
     }
     

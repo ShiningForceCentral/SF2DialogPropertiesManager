@@ -28,11 +28,11 @@ import java.util.Scanner;
  */
 public class DisassemblyManager {
     
-    public static DialogProperties importDisassembly(String filepath){
+    public static DialogProperties importDisassembly(String basePath, String filepath){
         System.out.println("com.sfc.sf2.dialogproperties.io.DisassemblyManager.importDisassembly() - Importing disassembly file ...");
         DialogProperties dialogproperties = new DialogProperties();
         if(filepath.endsWith(".asm")){
-            String enumFilePath = "..\\sf2enums.asm";
+            String enumFilePath = basePath + "sf2enums.asm";
             dialogproperties = importDisassemblyAsm(enumFilePath, filepath);
         }else{
             dialogproperties = importDisassemblyBin(filepath);
@@ -62,8 +62,12 @@ public class DisassemblyManager {
                         case "; enum Mapsprites":
                             line = enumScan.nextLine();
                             while(line.startsWith("MAPSPRITE")){
+                                if(line.contains(";")){
+                                    line = line.substring(0,line.indexOf(";"));
+                                }
                                 String key = line.substring(0,line.indexOf(":"));
-                                Integer value = Integer.valueOf(line.substring(line.indexOf("$")+1).trim(), 16);
+                                line = line.substring(line.indexOf(":")+1);
+                                Integer value = valueOf(line);
                                 mapspriteEnum.put(key, value);
                                 line = enumScan.nextLine();
                             }
@@ -72,8 +76,12 @@ public class DisassemblyManager {
                         case "; enum Portraits":
                             line = enumScan.nextLine();
                             while(line.startsWith("PORTRAIT")){
+                                if(line.contains(";")){
+                                    line = line.substring(0,line.indexOf(";"));
+                                }
                                 String key = line.substring(0,line.indexOf(":"));
-                                Integer value = Integer.valueOf(line.substring(line.indexOf("$")+1).trim(), 16);
+                                line = line.substring(line.indexOf(":")+1);
+                                Integer value = valueOf(line);
                                 portraitEnum.put(key, value);
                                 line = enumScan.nextLine();
                             }
@@ -82,8 +90,12 @@ public class DisassemblyManager {
                         case "; enum Sfx":
                             line = enumScan.nextLine();
                             while(line.startsWith("SFX")){
+                                if(line.contains(";")){
+                                    line = line.substring(0,line.indexOf(";"));
+                                }
                                 String key = line.substring(0,line.indexOf(":"));
-                                Integer value = Integer.valueOf(line.substring(line.indexOf("$")+1).trim(), 16);
+                                line = line.substring(line.indexOf(":")+1);
+                                Integer value = valueOf(line);
                                 sfxEnum.put(key, value);
                                 line = enumScan.nextLine();
                             }
@@ -106,28 +118,25 @@ public class DisassemblyManager {
             File file = new File(filepath);
             Scanner scan = new Scanner(file);
             while(scan.hasNext()){
-                String line = scan.nextLine();
-                if(line.trim().contains(":")){
+                String line = scan.nextLine().trim();
+                if(line.contains(";")){
+                    line = line.substring(0,line.indexOf(";"));
+                }
+                if(line.contains(":")){
                     line = line.substring(0,line.indexOf(":"));
                 }
-                if(line.trim().startsWith("mapSprite")){
+                if(line.startsWith("mapsprite")){
                     DialogPropertiesEntry entry = new DialogPropertiesEntry();
                     
-                    if(line.contains(";")){
-                        line = line.substring(0,line.indexOf(";"));
-                    }
-                    String value = line.trim().substring("mapSprite".length()).trim();
+                    String value = line.trim().substring("mapsprite".length()).trim();
                     if(value.contains("$")||value.matches("[0-9]+")){
                         entry.setSpriteId(valueOf(value));
                     }else{
                         entry.setSpriteId(mapspriteEnum.get("MAPSPRITE_"+value));
                     }
                     
-                    if(scan.hasNext()){line = scan.nextLine();}
-                    if(!line.trim().startsWith("portrait")){break;}
-                    if(line.contains(";")){
-                        line = line.substring(0,line.indexOf(";"));
-                    }
+                    if(scan.hasNext()){line = scan.nextLine().trim();}
+                    if(!line.startsWith("portrait")){break;}
                     value = line.trim().substring("portrait".length()).trim();
                     if(value.contains("$")||value.matches("[0-9]+")){
                         entry.setPortraitId(valueOf(value));
@@ -135,12 +144,9 @@ public class DisassemblyManager {
                         entry.setPortraitId(portraitEnum.get("PORTRAIT_"+value));
                     }
                     
-                    if(scan.hasNext()){line = scan.nextLine();}
-                    if(!line.trim().startsWith("speechSound")){break;}
-                    if(line.contains(";")){
-                        line = line.substring(0,line.indexOf(";"));
-                    }
-                    value = line.trim().substring("speechSound".length()).trim();
+                    if(scan.hasNext()){line = scan.nextLine().trim();}
+                    if(!line.trim().startsWith("speechSfx")){break;}
+                    value = line.substring("speechSfx".length()).trim();
                     if(value.contains("$")||value.matches("[0-9]+")){
                         entry.setSfxId(valueOf(value));
                     }else{
@@ -160,6 +166,7 @@ public class DisassemblyManager {
     }
     
     private static int valueOf(String s){
+        s = s.replace("equ", "");
         s = s.trim();
         if(s.startsWith("$")){
             return Integer.valueOf(s.substring(1),16);
@@ -269,6 +276,4 @@ public class DisassemblyManager {
         propertiesFileBytes[entries.length*4+1] = -1;
         return propertiesFileBytes;
     }
-    
-    
 }
