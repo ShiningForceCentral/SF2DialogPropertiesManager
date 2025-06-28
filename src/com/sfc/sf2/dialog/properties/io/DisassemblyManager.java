@@ -49,7 +49,134 @@ public class DisassemblyManager {
             Map<String, Integer> mapspriteEnum = new HashMap();
             Map<String, Integer> portraitEnum = new HashMap();
             Map<String, Integer> sfxEnum = new HashMap();
+            importMetadataAsm(enumFilePath, mapspriteEnum, portraitEnum, sfxEnum);
             
+            File file = new File(filepath);
+            Scanner scan = new Scanner(file);
+            while(scan.hasNext()){
+                String line = scan.nextLine().trim();
+                if(line.contains(";")){
+                    line = line.substring(0,line.indexOf(";"));
+                }
+                if(line.contains(":")){
+                    line = line.substring(0,line.indexOf(":"));
+                }
+                if(line.startsWith("mapsprite")){
+                    DialogPropertiesEntry entry = new DialogPropertiesEntry();
+                    
+                    String value = line.trim().substring("mapsprite".length()).trim();
+                    if(value.contains("$")||value.matches("[0-9]+")){
+                        entry.setSpriteId(valueOf(value));
+                    }else{
+                        entry.setSpriteId(mapspriteEnum.get("MAPSPRITE_"+value));
+                    }
+                    
+                    if(scan.hasNext()){line = scan.nextLine().trim();}
+                    if(!line.startsWith("portrait")){break;}
+                    value = line.trim().substring("portrait".length()).trim();
+                    if(value.contains("$")||value.matches("[0-9]+")){
+                        entry.setPortraitId(valueOf(value));
+                    }else{
+                        entry.setPortraitId(portraitEnum.get("PORTRAIT_"+value));
+                    }
+                    
+                    if(scan.hasNext()){line = scan.nextLine().trim();}
+                    if(!line.trim().startsWith("speechSfx")){break;}
+                    value = line.substring("speechSfx".length()).trim();
+                    if(value.contains("$")||value.matches("[0-9]+")){
+                        entry.setSfxId(valueOf(value));
+                    }else{
+                        entry.setSfxId(sfxEnum.get("SFX_"+value));
+                    }
+                    
+                    entryList.add(entry);
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(DisassemblyManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        entries = new DialogPropertiesEntry[entryList.size()];
+        entries = entryList.toArray(entries);
+        dialogproperties.setEntries(entries);
+        return dialogproperties;
+    }
+    
+    public static DialogProperties importAlliesDisassembly(String basePath, String filepath){
+        System.out.println("com.sfc.sf2.dialogproperties.io.DisassemblyManager.importAlliesDisassembly() - Importing disassembly file ...");
+        DialogProperties dialogproperties = new DialogProperties();
+        if(filepath.endsWith(".asm")){
+            String enumFilePath = basePath + "sf2enums.asm";
+            dialogproperties = importAlliesDisassemblyAsm(enumFilePath, filepath);
+        }else{
+            System.out.println("Importing ally dialogs from .bin is not implemented");
+        }
+        System.out.println("com.sfc.sf2.dialogproperties.io.DisassemblyManager.importAlliesDisassembly() - Disassembly imported.");
+        return dialogproperties;
+    }
+    
+    public static DialogProperties importAlliesDisassemblyAsm(String enumFilePath, String filepath){
+        DialogProperties dialogproperties = new DialogProperties();
+        DialogPropertiesEntry[] entries = null;
+        List<DialogPropertiesEntry> entryList = new ArrayList();
+        try{
+            Map<String, Integer> mapspriteEnum = new HashMap();
+            Map<String, Integer> portraitEnum = new HashMap();
+            Map<String, Integer> sfxEnum = new HashMap();
+            importMetadataAsm(enumFilePath, mapspriteEnum, portraitEnum, sfxEnum);
+            
+            File file = new File(filepath);
+            Scanner scan = new Scanner(file);
+            int index = 0;
+            while(scan.hasNext()){
+                String line = scan.nextLine().trim();
+                if (line.startsWith("allyPortraitAndSfx: macro"))
+                    continue;   //Ignore the macro definition
+                if(line.contains(";")){
+                    line = line.substring(0,line.indexOf(";"));
+                }
+                if(line.contains(":")){
+                    line = line.substring(0,line.indexOf(":"));
+                }
+                if(line.startsWith("allyPortraitAndSfx")){
+                    DialogPropertiesEntry entry = new DialogPropertiesEntry();
+                    
+                    String[] split = line.split("\\s+");
+                    split[1] = split[1].replace(",", "");
+                    
+                    entry.setPortraitId(portraitEnum.get("PORTRAIT_"+split[1]));
+                    entry.setSfxId(sfxEnum.get("SFX_"+split[2]));  
+                    
+                    String mapspriteSuffix = (index % 3 == 0 ? "_BASE" : (index % 3 == 1 ? "_PROMO" : "_SPECIAL"));
+                    String mapspritePrefix;
+                    if (split[1].contains("_")) {
+                        mapspritePrefix = "MAPSPRITE_"+split[1].substring(0, split[1].indexOf("_"));
+                    } else {
+                        mapspritePrefix = "MAPSPRITE_"+split[1];                            
+                    }
+                    if (mapspriteEnum.containsKey(mapspritePrefix+mapspriteSuffix)) {
+                        entry.setSpriteId(mapspriteEnum.get(mapspritePrefix+mapspriteSuffix));
+                    } else {
+                        if (mapspriteEnum.containsKey(mapspritePrefix+"_PROMO")) {
+                            entry.setSpriteId(mapspriteEnum.get(mapspritePrefix+"_PROMO"));
+                        } else if (mapspriteEnum.containsKey(mapspritePrefix+"_BASE")) {
+                            entry.setSpriteId(mapspriteEnum.get(mapspritePrefix+"_BASE"));
+                        }
+                    }                  
+                    entryList.add(entry);
+                    index++;
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(DisassemblyManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        entries = new DialogPropertiesEntry[entryList.size()];
+        entries = entryList.toArray(entries);
+        dialogproperties.setEntries(entries);
+        return dialogproperties;
+    }
+        
+    public static void importMetadataAsm(String enumFilePath, Map<String, Integer> mapspriteEnum, Map<String, Integer> portraitEnum, Map<String, Integer> sfxEnum){
+        try{            
             File enumFile = new File(enumFilePath);
             Scanner enumScan = new Scanner(enumFile);
             while(enumScan.hasNext()){
@@ -114,57 +241,11 @@ public class DisassemblyManager {
             if(sfxEnum.isEmpty()){
                 System.out.println("WARNING - No enum entry found for enum Sfx. Please check formatting : starts with line \"; enum Sfx\", directly followed by lines all starting with \"SFX\"");
             }
-            
-            File file = new File(filepath);
-            Scanner scan = new Scanner(file);
-            while(scan.hasNext()){
-                String line = scan.nextLine().trim();
-                if(line.contains(";")){
-                    line = line.substring(0,line.indexOf(";"));
-                }
-                if(line.contains(":")){
-                    line = line.substring(0,line.indexOf(":"));
-                }
-                if(line.startsWith("mapsprite")){
-                    DialogPropertiesEntry entry = new DialogPropertiesEntry();
-                    
-                    String value = line.trim().substring("mapsprite".length()).trim();
-                    if(value.contains("$")||value.matches("[0-9]+")){
-                        entry.setSpriteId(valueOf(value));
-                    }else{
-                        entry.setSpriteId(mapspriteEnum.get("MAPSPRITE_"+value));
-                    }
-                    
-                    if(scan.hasNext()){line = scan.nextLine().trim();}
-                    if(!line.startsWith("portrait")){break;}
-                    value = line.trim().substring("portrait".length()).trim();
-                    if(value.contains("$")||value.matches("[0-9]+")){
-                        entry.setPortraitId(valueOf(value));
-                    }else{
-                        entry.setPortraitId(portraitEnum.get("PORTRAIT_"+value));
-                    }
-                    
-                    if(scan.hasNext()){line = scan.nextLine().trim();}
-                    if(!line.trim().startsWith("speechSfx")){break;}
-                    value = line.substring("speechSfx".length()).trim();
-                    if(value.contains("$")||value.matches("[0-9]+")){
-                        entry.setSfxId(valueOf(value));
-                    }else{
-                        entry.setSfxId(sfxEnum.get("SFX_"+value));
-                    }
-                    
-                    entryList.add(entry);
-                }
-            }
         } catch (IOException ex) {
             Logger.getLogger(DisassemblyManager.class.getName()).log(Level.SEVERE, null, ex);
         }
-        entries = new DialogPropertiesEntry[entryList.size()];
-        entries = entryList.toArray(entries);
-        dialogproperties.setEntries(entries);
-        return dialogproperties;
     }
-    
+        
     private static int valueOf(String s){
         s = s.replace("equ", "");
         s = s.trim();

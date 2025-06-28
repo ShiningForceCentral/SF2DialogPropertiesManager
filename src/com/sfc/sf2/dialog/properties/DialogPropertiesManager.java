@@ -30,6 +30,19 @@ public class DialogPropertiesManager {
        
     public void importDisassembly(String palettePath, String mapspritesPath, String portraitsPath, String basePath, String filePath){
         System.out.println("com.sfc.sf2.dialog.properties.DialogPropertiesManager.importDisassembly() - Importing disassembly ...");
+        importGraphics(palettePath, mapspritesPath, portraitsPath, basePath);
+        dialogProperties = DisassemblyManager.importDisassembly(basePath, filePath);
+        System.out.println("com.sfc.sf2.dialog.properties.DialogPropertiesManager.importDisassembly() - Disassembly imported.");
+    }
+       
+    public void importAlliesDisassembly(String palettePath, String mapspritesPath, String portraitsPath, String basePath, String filePath){
+        System.out.println("com.sfc.sf2.dialog.properties.DialogPropertiesManager.importAlliesDisassembly() - Importing disassembly ...");
+        importGraphics(palettePath, mapspritesPath, portraitsPath, basePath);
+        dialogProperties = DisassemblyManager.importAlliesDisassembly(basePath, filePath);
+        System.out.println("com.sfc.sf2.dialog.properties.DialogPropertiesManager.importAlliesDisassembly() - Disassembly imported.");
+    }
+    
+    private void importGraphics(String palettePath, String mapspritesPath, String portraitsPath, String basePath) {
         mapsprites = mapSpriteManager.importDisassemblyFromEntryFile(palettePath, mapspritesPath, basePath);
         mapspriteImages = new BufferedImage[mapsprites.length/3];
         for(int i=0;i<mapspriteImages.length;i++){
@@ -47,8 +60,6 @@ public class DialogPropertiesManager {
             }
         }
         portraits = portraitManager.importDisassemblyFromEntryFile(basePath, portraitsPath);
-        dialogProperties = DisassemblyManager.importDisassembly(basePath, filePath);
-        System.out.println("com.sfc.sf2.dialog.properties.DialogPropertiesManager.importDisassembly() - Disassembly imported.");
     }
     
     public void exportDisassembly(String filepath){
